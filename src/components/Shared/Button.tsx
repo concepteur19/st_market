@@ -44,18 +44,18 @@ const Button: FC<ButtonProps> = ({
         } ${
           btnClass
             ? btnClass
-            : " flex space-x-3 justify-center hover:space-x-4  "
-        }`}
+            : " space-x-3 justify-center hover:space-x-4  "
+        } flex items-center`}
       >
         {btnIconLeft && <span>{btnIconLeft}</span>}{" "}
         <span>{buttonText ? buttonText : "SHOP NOW"}</span>{" "}
-        <span>
+        
           {btnIconRight ? (
             btnIconRight
           ) : (
-            <PiArrowRight size={24} color="white" className="" />
+            <span><PiArrowRight size={24} color="white" className="" /></span> 
           )}
-        </span>
+      
       </button>
     </>
   );

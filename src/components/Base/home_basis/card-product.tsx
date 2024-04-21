@@ -11,7 +11,7 @@ interface CardProductPros {
   notation?: number;
   name: string;
   price: number;
-  imgSrc: StaticImageData;
+  imgSrc: any;
   description?: string;
   badge?: BadgeProps;
   cardClassName: string;
@@ -37,9 +37,9 @@ const CardProduct: React.FC<CardProductPros> = ({
 
   return (
     <div
-      className={`font-publicR text-sm py-[14.5px] flex justify-center items-center border border-black-4 ${cardClassName} hover:bg-slate-100 cursor-pointer`}
+      className={`font-publicR text-sm py-[14.5px] flex justify-center border border-black-4 ${cardClassName} hover:bg-slate-100 cursor-pointer`}
     >
-      <div>
+      <div style={{ width: imgW, height: imgH, overflow: "hidden" }}>
         {badge && (
           <ProductBadge
             textColor={badge!.textColor}
@@ -47,7 +47,8 @@ const CardProduct: React.FC<CardProductPros> = ({
             badgeText={badge!.badgeText}
           />
         )}
-        <Image src={imgSrc} alt="" className="" width={imgW} height={imgH} />
+        <Image src={imgSrc} alt="" className="" layout="fixed" width={imgW} height={imgH} objectFit="cover"/>
+        
       </div>
       <div className={`flex flex-col ${contentClassName}`}>
         {notation && (
@@ -74,7 +75,7 @@ const CardProduct: React.FC<CardProductPros> = ({
             })}
           </span>
         )}
-        <p>{name.slice(0, 52) + "..."}</p>
+        <p>{name.slice(0, 52)}{name.length >52 && "..."}</p>
         <span className=" text-blue-0 font-publicSB">
           ${price}
         </span>

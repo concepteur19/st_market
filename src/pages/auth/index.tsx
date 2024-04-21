@@ -1,45 +1,47 @@
 import React, { useEffect, useState } from "react";
-// import { motion } from "framer-motion";
-import { FormProvider, useForm } from "react-hook-form";
+import { useRouter } from 'next/router';
 
 // components
 import FormLogin from "@/components/auth/formLogin";
 import FormSignup from "@/components/auth/formSignup";
 import NavAuth from "@/components/auth/navAuth";
 
+// service
+import AuthService from "@/services/Auth/auth.service";
+import User from "@/models/user.model";
+
 const Index = () => {
+  const router = useRouter();
+  const [userConnected, setUser] = useState<User>()
+
   const [isLogin, setIsLogin] = useState(true);
 
-  // const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  // const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorsIndex, setErrors] = useState({
-    emailLogin: "",
-    passwordLogin: "",
+    username: "",
+    password: "",
   });
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     validateForm();
-  }, [email, password]);
+  }, [username, password]);
 
   const validateForm = () => {
-    let errors$ = {
-      // name: '',
-      emailLogin: '',
-      passwordLogin: '',
-    };
+    let errors$ = {};
 
-    // if (!name) {
-    //     errors.name = 'Name is required.';
-    // }
-
-    if (!/\S+@\S+\.\S+/.test(email) && email !== "") {
-      errors$.emailLogin = "Email is invalid.";
+    if (!username && username !== "") {
+        errors$.username = 'Username is required.';
     }
 
+    // if (!/\S+@\S+\.\S+/.test(email) && email !== "") {
+    //   errors$.email = "Email is invalid.";
+    // }
+
     if (password.length < 8 && password !== "") {
-      errors$.passwordLogin = "Password must be at least 8 characters.";
+      errors$.password = "Password must be at least 8 characters.";
     }
 
     console.log(errors$);
@@ -48,32 +50,6 @@ const Index = () => {
     setErrors(errors$);
     setIsFormValid(Object.keys(errors$).length === 0);
   };
-
-  function onSubmit(e: any) {
-    e.preventDefault();
-
-    let updatedErrors = {
-      ...errorsIndex,
-      emailLogin: '',
-      passwordLogin: '',
-    };
-  
-    if (email === "") {
-      updatedErrors.emailLogin = 'Email is required.';
-    }
-  
-    if (password === "") {
-      updatedErrors.passwordLogin = 'Password is required.';
-    }
-  
-    setErrors(updatedErrors);
-
-    if (password !== "" && password !== "" && isFormValid) {
-      console.log("Form submitted successfully!");
-    } else {
-      console.log("Form has errors. Please correct them.");
-    }
-  }
 
   const handleFormChange = (isActive: boolean) => {
     setIsLogin(isActive);
@@ -85,10 +61,60 @@ const Index = () => {
 
     if(name === "password") {
       setPassword(value)
-    } else if(name === "email") {
-      setEmail(value)
+    } 
+    else if(name === "username") {
+      setUsername(value)
     }
+    // else if(name === "email") {
+    //   setEmail(value)
+    // }
   };
+
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+
+    let updatedErrors = {
+      ...errorsIndex,
+    };
+  
+    // if (email === "") {
+    //   updatedErrors.email = 'Email is required.';
+    // }
+
+    if (username === "") {
+      updatedErrors.username = 'Username is required.';
+    }
+  
+    if (password === "") {
+      updatedErrors.password = 'Password is required.';
+    }
+  
+    setErrors(updatedErrors);
+
+    if (password !== "" && password !== "" && isFormValid) {
+      console.log("Form submitted successfully!");
+
+      try {
+        const response: User = await AuthService.login({ username, password });
+        console.log('Connexion réussie !', response);
+
+        setUser(response)
+
+        // Rediriger vers la page d'accueil ou autre page après la connexion réussie
+        router.push('/');
+      } catch (error: any) {
+        console.error('Erreur lors de la connexion:', error.response.data.message);
+        // setErrorMessage(error.message);
+      }
+
+    } else {
+      console.log("Form has errors. Please correct them.");
+    }
+  }
+
+  useEffect(() => {
+    localStorage.setItem('token', userConnected?.token!);
+  }, [userConnected])
 
   return (
     // <FormProvider >
@@ -99,7 +125,7 @@ const Index = () => {
           {isLogin ? (
             <FormLogin
               errors={errorsIndex}
-              // isFormValid = {isFormValid}
+              isFormValid = {isFormValid}
               inputChange={(e) => inputChange(e)}
             />
           ) : (

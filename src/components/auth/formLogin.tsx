@@ -25,10 +25,10 @@ const FormLogin: FC<Props> = ({ inputChange, errors, isFormValid }) => {
   return (
     <div className=" flex flex-col space-y-4 px-8 pb-9">
       <Input
-        inputLabel="Email Address"
+        inputLabel="Username"
         labelClassname=" font-publicR text-sm "
-        inputId="emailLogin"
-        inputType="email"
+        inputId="username"
+        inputType="text"
         inputClass=" rounded-[2px] border border-[#E4E7E9] pl-2"
         handleChange={inputChange}
         errors={errors}
@@ -37,7 +37,7 @@ const FormLogin: FC<Props> = ({ inputChange, errors, isFormValid }) => {
       <Input
         inputLabel="Password"
         labelClassname=" font-publicR text-sm "
-        inputId="passwordLogin"
+        inputId="password"
         inputType={!isOpen ? "password" : "text"}
         inputClass=" rounded-[2px] border border-[#E4E7E9] pl-2"
         handleChange={inputChange}
