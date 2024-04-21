@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 // component
 import CardProduct from "@/components/Base/home_basis/card-product";
@@ -10,24 +10,41 @@ import Pagination from "@/components/category/pagination";
 import imageTop from "../../../public/images/png/producttop.png";
 import Product from "@/models/product.model";
 import ProductService from "@/services/Products/product.service";
+import { selectedCategoryContext } from "@/context/CategoryContext";
 
 const filterSelected = ["Electronics Devices", "5 stars rating", "< 200£"];
 
 const Id = () => {
+  const selectedCategory = useContext(selectedCategoryContext);
+  console.log(selectedCategory)
 
   const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const productByCategory = async () => {
+      console.log("selected",selectedCategory);
+      
+      try {
+        const productResponse = await ProductService.getProductsByCategory(
+          selectedCategory
+        );
+        setProducts(productResponse.products);
+      } catch (error: any) {
+        console.log(error);
+      }
+    };
+
+    productByCategory();
+  }, [selectedCategory]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await ProductService.getProducts();
-        console.log("products",response.products);
+        console.log("products", response.products);
         setProducts(response.products);
-        
-        
       } catch (error: any) {
         console.log(error);
-        
       }
     };
 
@@ -44,12 +61,11 @@ const Id = () => {
   const endIndex = startIndex + itemsPerPage;
 
   // Obtenir les éléments de la page actuelle
-    const currentProducts = products.slice(startIndex, endIndex);
+  const currentProducts = products.slice(startIndex, endIndex);
 
   // Calculer le nombre total de pages
   const totalPages = products.length / itemsPerPage;
-  console.log("nbr of pages", totalPages);
-  
+  console.log("nbr of pages", Math.ceil(totalPages));
 
   // Fonction pour changer de page
   const changePage = (page: number) => {
@@ -70,7 +86,11 @@ const Id = () => {
   };
 
   return (
-    <div className={`px-[343px] pb-[72px] pt-10 space-y-10 ${!products && 'h-screen'}` }>
+    <div
+      className={`px-[343px] pb-[72px] pt-10 space-y-10 ${
+        !products && "h-screen"
+      }`}
+    >
       <div className="grid gap-6">
         <div className=" space-y-4">
           <SearchSort />
@@ -79,30 +99,42 @@ const Id = () => {
         </div>
 
         <div className="relative grid grid-cols-5 grid-flow-row gap-4 ">
-        {/* {Array.from({ length: 10 }, (_, index) => { */}
-        {products[0] ?
-          currentProducts.map((product, index) => {
-            return (
-              <CardProduct
-                key={`cardProduct-${index}`}
-                name={product.title}
-                notation={Number(product.rating)}
-                price={Number(product.price)}
-                cardClassName=" p-4 flex-col rounded-[2px] space-y-3"
-                contentClassName=" space-y-2"
-                imgH={172}
-                imgW={202}
-                imgSrc={product.images[0]}
-              />
-            );
-          }): (<p className="absolute left-[500px] font-publicSB text-black-0 text-center text-xl">There is no products here</p>)}
+          {/* {Array.from({ length: 10 }, (_, index) => { */}
+          {products[0] ? (
+            currentProducts.map((product, index) => {
+              return (
+                <CardProduct
+                  id={product.id}
+                  key={`cardProduct-${index}`}
+                  name={product.title}
+                  notation={Number(product.rating)}
+                  price={Number(product.price)}
+                  cardClassName=" p-4 flex-col rounded-[2px] space-y-3"
+                  contentClassName=" space-y-2"
+                  imgH={172}
+                  imgW={202}
+                  imgSrc={product.images[0]}
+                />
+              );
+            })
+          ) : (
+            <p className="absolute left-[500px] font-publicSB text-black-0 text-center text-xl">
+              There is no products here
+            </p>
+          )}
 
-        {/* })} */}
-      </div>
+          {/* })} */}
+        </div>
       </div>
 
       <div>
-        <Pagination totalPages={Math.ceil(totalPages)} active={active} next={next} prev={prev} changePage={changePage}/>
+        <Pagination
+          totalPages={Math.ceil(totalPages)}
+          active={active}
+          next={next}
+          prev={prev}
+          changePage={changePage}
+        />
       </div>
     </div>
   );

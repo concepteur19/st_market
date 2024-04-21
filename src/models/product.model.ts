@@ -7,5 +7,7 @@ export default interface Product{
     rating: string,
     stock: string,
     category: string,
-    images: string[]
+    images: string[],
+    brand: string,
+    thumbnail?: string
 }

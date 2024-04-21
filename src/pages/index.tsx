@@ -33,7 +33,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await ProductService.getProducts(10);
+        const response = await ProductService.getProducts();
         console.log("products", response.products);
         setProducts(response.products);
       } catch (error: any) {
@@ -45,18 +45,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // Filter products based on activePath
     const filterProducts = () => {
       if (activePath === "all") {
-        setFilteredProducts(products); // Show all products
+        setFilteredProducts(products.slice(0, 10));
       } else {
         setFilteredProducts(
-          products.filter((product) => product.category === activePath) // Filter by category
+          products.filter((product) => product.category === activePath) 
         );
       }
     };
-
-    filterProducts(); // Call on initial render and activePath change
+  
+    filterProducts();
   }, [products, activePath]);
 
   useEffect(() => {
@@ -115,6 +114,7 @@ export default function Home() {
             filteredProducts.map((product, index) => {
               return (
                 <CardProduct
+                id={product.id}
                   key={`cardProduct-${index}`}
                   name={product.title}
                   notation={Number(product.rating)}
@@ -123,7 +123,7 @@ export default function Home() {
                   contentClassName=" space-y-2"
                   imgH={172}
                   imgW={202}
-                  imgSrc={product.images[0]}
+                  imgSrc={product.thumbnail}
                 />
               );
             })

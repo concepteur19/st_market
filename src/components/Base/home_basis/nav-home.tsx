@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useContext, useState } from "react";
+import React from "react";
 
 // react-icons
 import { PiArrowRight } from "react-icons/pi";
@@ -15,7 +15,7 @@ const NavHome: React.FC<NavHomeProps> = ({
   handleClick,
   categories,
 }) => {
-  const limitedCategories = categories.slice(0, 2);
+  const limitedCategories = categories.slice(0, 5);
 
   return (
     <div className="flex justify-between text-sm font-publicR ">

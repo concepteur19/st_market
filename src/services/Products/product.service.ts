@@ -19,7 +19,7 @@ const ProductService = {
     },
 
     // product detail
-    getOneProduct: async (id: number): Promise<any> => {
+    getOneProduct: async (id: string | string[]): Promise<any> => {
         try {
             const response = await axiosAuth.get<any>(`/products/${id}`)
             return response.data

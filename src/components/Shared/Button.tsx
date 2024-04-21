@@ -15,7 +15,7 @@ export interface ButtonProps {
   btnType?: "submit" | "button" | undefined;
   isDisable?: boolean;
 
-  handleClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleClick?: () => void;
 }
 
 const Button: FC<ButtonProps> = ({

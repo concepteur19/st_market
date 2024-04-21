@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // react icons
 import { BiPlus, BiMinus } from "react-icons/bi";
@@ -7,34 +7,57 @@ import { PiArrowLeft } from "react-icons/pi";
 
 // component
 import Button from "../Shared/Button";
+import Link from "next/link";
+import { useCartContext } from "@/context/Context";
+
+import { useRouter } from 'next/router';
 
 const ShoppingCart = () => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      name: "4K UHD LED Smart TV with Chromecast Built-in",
-      price: 99,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: "Wired Over-Ear Gaming Headphones with USB",
-      price: 250,
-      quantity: 3,
-    },
-  ]);
 
-  const calculateSubTotal = (price: number, quantity: number) =>
-    price * quantity;
+  const { cartItems } = useCartContext();
+
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   const storedItems = localStorage.getItem("cartItems");
+  //   if (storedItems) {
+  //     setItems(JSON.parse(storedItems));
+  //   }
+  // }, []);
 
   const handleQuantityChange = (itemId: number, newQuantity: number) => {
-    const updatedItems = items.map((item) => {
+    const updatedItems = cartItems.map((item) => {
       if (item.id === itemId) {
         return { ...item, quantity: newQuantity };
       }
       return item;
     });
     setItems(updatedItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+  };
+
+  const [items, setItems] = useState([]);
+
+  const calculateSubTotal = (price: number, quantity: number) =>
+    price * quantity;
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(items));
+  }, [items]);
+
+  // const handleQuantityChange = (itemId: number, newQuantity: number) => {
+  //   const updatedItems = items.map((item) => {
+  //     if (item.id === itemId) {
+  //       return { ...item, quantity: newQuantity };
+  //     }
+  //     return item;
+  //   });
+  //   setItems(updatedItems);
+  // };
+
+  const handleSaveCart = () => {
+    const userId = localStorage.getItem('userId');
+    router.push(`/cart/${userId}`);
   };
 
   return (
@@ -53,7 +76,7 @@ const ShoppingCart = () => {
             </div>
           </div>
           <div className=" p-6">
-            {items.map((item) => (
+            {cartItems.map((item) => (
               <div
                 key={item.id}
                 className="flex justify-between items-center space-y-4"
@@ -62,11 +85,11 @@ const ShoppingCart = () => {
                   <span className=" cursor-pointer">
                     <RxCrossCircled color="#929FA5" size={24} />
                   </span>{" "}
-                  <span>{item.name}</span>
+                  <span>{item.title}</span>
                 </div>
                 <span className=" flex justify-start ">${item.price}</span>
-                <span className="flex items-center border border-black-4 px-5 py-3 space-x-7 w-[148px]">
-                  <button
+                {/* <span className="flex items-center border border-black-4 px-5 py-3 space-x-7 w-[148px]"> */}
+                  {/* <button
                     className="inline-block rounded-md text-gray-400 hover:text-gray-600 text-[16px]"
                     onClick={() =>
                       handleQuantityChange(item.id, item.quantity - 1)
@@ -74,17 +97,17 @@ const ShoppingCart = () => {
                     disabled={item.quantity <= 1}
                   >
                     <BiMinus size={16} />
-                  </button>
+                  </button> */}
                   <span className="mx-2 text-[16px]">{item.quantity}</span>
-                  <button
+                  {/* <button
                     className="inline-block rounded-md text-gray-400 hover:text-gray-600"
                     onClick={() =>
                       handleQuantityChange(item.id, item.quantity + 1)
                     }
                   >
                     <BiPlus size={16} />
-                  </button>
-                </span>
+                  </button> */}
+                {/* </span> */}
                 <span className="text-left">
                   ${calculateSubTotal(item.price, item.quantity)}
                 </span>
@@ -94,21 +117,27 @@ const ShoppingCart = () => {
         </div>
       </main>
       <footer className="border border-transparent border-t-black-4 p-6 flex justify-between font-publicB">
-        <Button
-          btnBg=" bg-white"
-          btnText=" text-blue-0"
-          btnBorder=" border-[2px] border-blue-0"
-          btnIconLeft = {<PiArrowLeft size={24} />}
-          btnIconRight
-          buttonText="RETURN TO SHOP"
-        />
-        <Button
-          btnBg=" bg-white"
-          btnText=" text-blue-0"
-          btnBorder=" border-[2px] border-blue-0"
-          btnIconRight
-          buttonText="UPDATE CART"
-        />
+        <Link href="/">
+          <Button
+            btnBg=" bg-white"
+            btnText=" text-blue-0"
+            btnBorder=" border-[2px] border-blue-0"
+            btnIconLeft={<PiArrowLeft size={24} />}
+            btnIconRight
+            buttonText="RETURN TO SHOP"
+          />
+        </Link>
+
+        {/* <Link href="/cart/1"> */}
+          <Button
+            btnBg=" bg-white"
+            btnText=" text-blue-0"
+            btnBorder=" border-[2px] border-blue-0"
+            btnIconRight
+            buttonText="SAVE CART"
+            handleClick={handleSaveCart}
+          />
+        {/* </Link> */}
       </footer>
     </div>
   );

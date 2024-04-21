@@ -10,9 +10,9 @@ import CategoryService from "@/services/Category/category.service";
 
 // context
 import { categoryContext } from "@/context/CategoryContext";
+import { CartProvider } from "@/context/Context";
 
 export default function App({ Component, pageProps }: AppProps) {
-
   const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
@@ -35,9 +35,14 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <categoryContext.Provider value={categories}>
-      <LayoutApp>
-        <Component {...pageProps} />
-      </LayoutApp>
+      {/* <CartContextProvider> */}
+      <CartProvider>
+        <LayoutApp>
+          <Component {...pageProps} />
+        </LayoutApp>
+      </CartProvider>
+
+      {/* </CartContextProvider> */}
     </categoryContext.Provider>
   );
 }

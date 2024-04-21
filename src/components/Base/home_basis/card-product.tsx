@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // components
 import Image, { StaticImageData } from "next/image";
@@ -6,8 +6,11 @@ import ProductBadge, { BadgeProps } from "./product-badge";
 
 //react-icons
 import { BsStar, BsStarFill } from "react-icons/bs";
+import { useCartContext } from "@/context/Context";
+import { title } from "process";
 
 interface CardProductPros {
+  id?: number;
   notation?: number;
   name: string;
   price: number;
@@ -21,6 +24,7 @@ interface CardProductPros {
 }
 
 const CardProduct: React.FC<CardProductPros> = ({
+  id,
   name,
   price,
   notation,
@@ -35,9 +39,16 @@ const CardProduct: React.FC<CardProductPros> = ({
   const numberOfStars = Math.trunc(notation!);
   const remainStars = 5 - numberOfStars;
 
+  const {addToCart} = useCartContext();
+  const [quantity, setQuantity] = useState(1);
+
+  const handleAddproduct = () => {
+    addToCart({title: name, price: price, id: id, quantity: quantity})
+  } 
+
   return (
     <div
-      className={`font-publicR text-sm py-[14.5px] flex justify-center border border-black-4 ${cardClassName} hover:bg-slate-100 cursor-pointer`}
+      className={`font-publicR text-sm py-[14.5px] flex justify-center border border-black-4 ${cardClassName} hover:shadow-md`}
     >
       <div style={{ width: imgW, height: imgH, overflow: "hidden" }}>
         {badge && (
@@ -47,7 +58,7 @@ const CardProduct: React.FC<CardProductPros> = ({
             badgeText={badge!.badgeText}
           />
         )}
-        <Image src={imgSrc} alt="" className="" layout="fixed" width={imgW} height={imgH} objectFit="cover"/>
+        <Image src={imgSrc} alt="" className=" hover:bg-slate-100" layout="fixed" width={imgW} height={imgH} objectFit="cover"/>
         
       </div>
       <div className={`flex flex-col ${contentClassName}`}>
@@ -79,7 +90,10 @@ const CardProduct: React.FC<CardProductPros> = ({
         <span className=" text-blue-0 font-publicSB">
           ${price}
         </span>
+
+        
       </div>
+      <button onClick={handleAddproduct} className=" text-left border w-fit p-2 hover:bg-orange-0 hover:text-white">Add to cart</button>
     </div>
   );
 };

@@ -114,6 +114,7 @@ const Index = () => {
 
   useEffect(() => {
     localStorage.setItem('token', userConnected?.token!);
+    localStorage.setItem('userId', userConnected?.id!);
   }, [userConnected])
 
   return (
